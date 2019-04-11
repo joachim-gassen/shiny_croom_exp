@@ -1,0 +1,15 @@
+line_item;value;full_cost
+Predicted sales in units (app.);100.000;1
+Material costs per unit;$4;1
+Energy costs per unit;$2;1
+Proportional labor costs (allocated by unit);$3;1
+Proportional depreciation costs (allocated by unit);$2;1
+Proportional sales and administrative costs (allocated by unit);$1;1
+Full cost per unit;$12;1
+Predicted sales in units (app.);100.000;0
+Labor costs (fix);$300.000;0
+Depreciation costs (fix);$200.000;0
+Sales and administrative costs (fix);$100.000;0
+Material costs per unit;$4;0
+Energy costs per unit;$2;0
+Variable cost per unit;$6;0

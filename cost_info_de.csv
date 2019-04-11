@@ -1,0 +1,15 @@
+line_item;value;full_cost
+Geplanter Absatz in Stück (ca.);100.000;1
+Materialkosten pro Stück;4 €;1
+Energiekosten pro Stück;2 €;1
+Anteilige Personalkosten (umgerechnet pro Stück);3 €;1
+Anteilige Abschreibungen (umgerechnet pro Stück);2 €;1
+Anteilige Vertriebs- und Verwaltungskosten (umgrechnet pro Stück);1 €;1
+Vollkosten pro Stück;12 €;1
+Geplanter Absatz in Stück (ca.);100.000;0
+Personalkosten (fix);300.000 €;0
+Abschreibungen (fix);200.000 €;0
+Vertriebs- und Verwaltungskosten (fix);100.000 €;0
+Materialkosten pro Stück;4 €;0
+Energiekosten pro Stück;2 €;0
+Teilkosten pro Stück;6 €;0
