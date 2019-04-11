@@ -37,11 +37,11 @@ If you want to re-run the exact same experiment in your class for didactcial pur
 If you want to use the code as a starting point for your own classroom experiments, here are some remarks about the code.
 
 -   The repository contains both shiny apps (`app_experiment_en.R` and `app_restults_en.R`) in one directory. Make sure to export them as two separate shiny apps in separate folders.
--   The file `kore_croom_exp.sqlite3` contains an empty `SQLite` database to store the response data. The file `ìnit_sqlite_db.R` contains some code snippets that might be useful when working with the database.
+-   The file `croom_exp.sqlite3` contains an empty `SQLite` database to store the response data. The file `ìnit_sqlite_db.R` contains some code snippets that might be useful when working with the database.
 -   When you want to use the real-time results feature, your result app needs to have access to the database file that the experiment app is writing to. When you are hosting this on your own shiny server this can be realized by the results app linking to the database file in the folder of the experiment app. If you plan to host your apps on a service like 'shinyapps.io' then this will most likely not be feasible. In this case, you might consider switching to an external database.
 -   When running this in a large class, your students might experience "Too many users" errors from shiny as shiny has a limit of 100 concurrent users for a given app. When running your own shiny server you can configure shiny to allow more users but my guess is that you will run into performance issues at some point. Another option (the one that I went with) is to ask students to be patient and hit 'reload'.
 -   Finally, I whipped all this up relatively quickly, so I cannot guarantee that the code is error free and runs exactly as advertised. Please get in touch when you encounter something odd.
 
-This is it. Let me know your thoughts and I would be very happy to get in touch if you a reusing the code for your own projects. In particular, I would be interested in hearing about people that replicate our experimental classroom result.
+This is it. Let me know your thoughts and I would be very happy to get in touch if you are reusing the code for your own projects. In particular, I would be interested in hearing about people that replicate our experimental classroom result.
 
 Enjoy!
