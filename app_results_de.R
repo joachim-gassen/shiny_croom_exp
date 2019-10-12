@@ -13,6 +13,7 @@ library(shinyjs, quietly = TRUE)
 library(tidyverse)
 library(kableExtra)
 
+dbase_path <- "croom_exp_response.sqlite3"
 
 ui <- fluidPage(
   titlePanel("Preiskalkulation: Die Auswertung"),
@@ -67,7 +68,7 @@ server <- function(input, output, session) {
     df
   } 
   
-  raw_df <- read_experiment_data("croom_exp_response.sqlite3")
+  raw_df <- read_experiment_data(dbase_path)
   
   d <- reactive({
     if (input$data_cutoff == "be6eur") df <- raw_df %>% filter(price > 6)

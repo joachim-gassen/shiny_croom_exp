@@ -15,6 +15,8 @@ library(DT, quietly = TRUE)
 library(shinyjs, quietly = TRUE)
 
 cost_info <- read.csv2("cost_info_en.csv")
+dbase_path <- "croom_exp.sqlite3"
+DEBUG <- TRUE
 
 disableActionButton <- function(id, session) {
   session$sendCustomMessage(type="jsCode",
@@ -65,45 +67,53 @@ server <- function(input, output, session) {
   wrong_selection <- reactiveVal(FALSE)
   
   has_participated <- reactiveVal(FALSE)
+  full_cost_tment <- reactiveVal()
+  has_been_treated <- reactiveVal(FALSE)
   
   # check if a user already has participated cookie is present  
-  observe({
-    js$getcookie()
-    if (!is.null(input$jscookie) && 
-        input$jscookie == "HAS_PARTICIPATED_IN_CROOM_EXP") {
-      has_participated(TRUE)
+  observe({js$getcookie()})
+  observeEvent(input$jscookie,{
+    if (!DEBUG && !is.null(input$jscookie)) {
+      if (input$jscookie == "HAS_PARTICIPATED_IN_CROOM_EXP") 
+        has_participated(TRUE)
+      if (!has_been_treated() && !has_participated() &&
+          grepl("CROOM_EXP_TMENT_", input$jscookie, fixed = TRUE)) {
+        has_been_treated(TRUE)
+        full_cost_tment(as.logical(as.integer(substr(input$jscookie, 17, 17))))
+      }
+    }
+    if (!has_participated() && !has_been_treated()) {
+      con <- dbConnect(RSQLite::SQLite(), dbase_path)
+      res <- dbSendQuery(con, "SELECT full_cost FROM answers")
+      df <- dbFetch(res)
+      dbClearResult(res)
+      dbDisconnect(con)
+      if (nrow(df) == 0) full_cost_tment(runif(1) > 0.5)   
+      else full_cost_tment(!(mean(df$full_cost) > 0.5))
+      has_been_treated(TRUE)
+      js$setcookie(sprintf("CROOM_EXP_TMENT_%d", as.integer(full_cost_tment())))
     }
   })
 
   store_user_response <- function(tment, response, time) {
-    con <- dbConnect(RSQLite::SQLite(), "croom_exp.sqlite3")
+    con <- dbConnect(RSQLite::SQLite(), dbase_path)
     res <- dbSendQuery(con, sprintf("INSERT INTO answers VALUES ('%s', %d, %f, %f)",
                                     Sys.time(), tment, response, time))
     dbClearResult(res)
     dbDisconnect(con)   
   } 
   
-  assign_treatment <- function() {
-    con <- dbConnect(RSQLite::SQLite(), "croom_exp.sqlite3")
-    res <- dbSendQuery(con, "SELECT full_cost FROM answers")
-    df <- dbFetch(res)
-    dbClearResult(res)
-    dbDisconnect(con)
-    if (nrow(df) == 0) runif(1) > 0.5   
-    else !(mean(df$full_cost) > 0.5)
-  } 
-  
-  full_cost_tment <- assign_treatment() 
   time_in <- Sys.time()
   
   observeEvent(input$submit, {
         if (input$price != "") {
           time_submitted <<- as.numeric(difftime(Sys.time(), time_in, units = "sec"))
           response <- as.numeric(substr(input$price, 2, 3))
-          store_user_response(full_cost_tment, response, time_submitted)
+          store_user_response(full_cost_tment(), response, time_submitted)
           disable("submit")
           submitted(TRUE)
           wrong_selection(FALSE)
+          has_participated(TRUE)
           js$setcookie("HAS_PARTICIPATED_IN_CROOM_EXP") 
         } else {
           wrong_selection(TRUE)
@@ -111,7 +121,7 @@ server <- function(input, output, session) {
   })
   
   output$greeting <- renderUI(
-    if(!has_participated()) {
+    if(has_been_treated() && !has_participated()) {
       fluidRow(
         column(12, br(),
                p("Welcome! This little classroom experiment presents a pricing",
@@ -128,7 +138,7 @@ server <- function(input, output, session) {
                br()
                )
       )
-    } else {
+    } else if (has_participated()) {
       fluidRow(
         column(12, align = "center",
                p(),
@@ -139,7 +149,7 @@ server <- function(input, output, session) {
   )
 
   output$response <- renderUI(
-    if (!has_participated() & !wrong_selection()) {
+    if (has_been_treated() && !has_participated() && !wrong_selection()) {
       fluidRow(
         column(12, align = "center",
                selectizeInput(
@@ -178,59 +188,55 @@ server <- function(input, output, session) {
   )
   
   output$full_cost_info <- renderDataTable(
-    if (!has_participated()) {
-      datatable(cost_info[cost_info$full_cost == 1, c("line_item", "value")], 
-                class = "", 
-                options = list(searching = FALSE,
-                               paging = FALSE,
-                               info = FALSE,
-                               ordering = FALSE),
-                rownames = FALSE,
-                selection = "none",
-                colnames = c("Cost item" = 1,
-                             "Value" = 2)) %>%
-        formatStyle(
-          1,
-          target = "row",
-          fontWeight = styleEqual("Full cost per unit", "bold")
-        )
-    }
+    datatable(cost_info[cost_info$full_cost == 1, c("line_item", "value")], 
+              class = "", 
+              options = list(searching = FALSE,
+                             paging = FALSE,
+                             info = FALSE,
+                             ordering = FALSE),
+              rownames = FALSE,
+              selection = "none",
+              colnames = c("Cost item" = 1,
+                           "Value" = 2)) %>%
+      formatStyle(
+        1,
+        target = "row",
+        fontWeight = styleEqual("Full cost per unit", "bold")
+      )
   )
-
+  
   output$partial_cost_info <- renderDataTable(
-    if (!has_participated()) {
-      datatable(cost_info[cost_info$full_cost == 0, c("line_item", "value")], 
-                class = "",
-                options = list(searching = FALSE,
-                               paging = FALSE,
-                               info = FALSE,
-                               ordering = FALSE),
-                rownames = FALSE,
-                selection = "none",
-                colnames = c("Cost item" = 1,
-                             "Value" = 2)) %>%
-        formatStyle(
-          1,
-          target = "row",
-          fontWeight = styleEqual("Variable cost per unit", "bold")
-        )
-    }
+    datatable(cost_info[cost_info$full_cost == 0, c("line_item", "value")], 
+              class = "",
+              options = list(searching = FALSE,
+                             paging = FALSE,
+                             info = FALSE,
+                             ordering = FALSE),
+              rownames = FALSE,
+              selection = "none",
+              colnames = c("Cost item" = 1,
+                           "Value" = 2)) %>%
+      formatStyle(
+        1,
+        target = "row",
+        fontWeight = styleEqual("Variable cost per unit", "bold")
+      )
   )
-
+  
   output$cost_info <- renderUI(
-      if (!has_participated() & full_cost_tment) {
-        fluidRow(
-          column(12, tagList(
-            p("The following information is available:"),
-            dataTableOutput('full_cost_info'))
+    if (has_been_treated() && !has_participated() && full_cost_tment()) {
+      fluidRow(
+        column(12, tagList(
+          p("The following information is available:"),
+          dataTableOutput('full_cost_info'))
         ))
-      } else if (!has_participated()) {
-        fluidRow(
-          column(12, tagList(
-            p("The following information is available:"),
-            dataTableOutput('partial_cost_info'))
-          ))
-      }
+    } else if (has_been_treated() && !has_participated()) {
+      fluidRow(
+        column(12, tagList(
+          p("The following information is available:"),
+          dataTableOutput('partial_cost_info'))
+        ))
+    }
   )
 }
 
