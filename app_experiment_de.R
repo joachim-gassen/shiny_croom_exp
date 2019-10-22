@@ -108,7 +108,7 @@ server <- function(input, output, session) {
   observeEvent(input$submit, {
     if (input$price != "") {
       time_submitted <<- as.numeric(difftime(Sys.time(), time_in, units = "sec"))
-      response <- as.numeric(substr(input$price, 2, 3))
+      response <- as.numeric(substr(input$price, 1, 2))
       store_user_response(full_cost_tment(), response, time_submitted)
       disable("submit")
       submitted(TRUE)
