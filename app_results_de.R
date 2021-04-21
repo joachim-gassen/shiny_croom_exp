@@ -14,46 +14,52 @@ library(tidyverse)
 library(kableExtra)
 
 dbase_path <- "croom_exp_response.sqlite3"
+end_experiment <- lubridate::as_datetime("2021-04-27 10:00:00", tz = "CEST")
+DEBUG <- TRUE
 
-ui <- fluidPage(
-  titlePanel("Preiskalkulation: Die Auswertung"),
-  p("Hier finden Sie die Auswertung unseres Experiments."),
-  br(),
-  sidebarLayout(
-    sidebarPanel(
-      radioButtons("data_cutoff", "Wollen Sie das Sample beschränken?",
-                   c("Alle Beobachtungen" = "none",
-                     "Nur Beobachtungen mit Preis > 6 €" = "be6eur")),
-      br(),
-      sliderInput("exclude_below_time",
-                  "Nur Beobachtungen mit Antwortzeit in Sekunden größer als...",
-                  value = 0,
-                  min = 0,
-                  max = 60),
-      downloadButton("download", "Download des Datensatzes")
-      
-    ),
-    mainPanel(
-      h3("Deskriptive Statistik"),
-      p("Unten sehen Sie Ihr Antwortverhalten, getrennt für die beiden",
-        "Experimentalgruppen. Der Preis in ist Euro und die Antwortzeit", 
-        "ist in Sekunden angegeben."),
-      tableOutput("descriptive_table"),
-      h3("Gruppenboxplot"),
-      plotOutput("box_plots"),
-      br(),
-      h3("Teststatistiken"),
-      tableOutput("tests"),
-      p(),
-      p("Der Chi-square Test basiert auf der folgenden Kontingenztabelle."),
-      tableOutput("cont_table"),
-      br(),
-      HTML("<p>Copyright Joachim Gassen, gassen@wiwi.hu-berlin.de, 2019.", 
-           "Siehe <a href='https://github.com/joachim-gassen/shiny_croom_exp'>",
-           "GitHub repository</a> für Lizenz, Code und Details.")
+if(Sys.time() < end_experiment & ! DEBUG) {
+  ui <- fluidPage(p("Hier gibt es leider noch gar nichts zu sehen."))
+} else {
+  ui <- fluidPage(
+    titlePanel("Preiskalkulation: Die Auswertung"),
+    p("Hier finden Sie die Auswertung unseres Experiments."),
+    br(),
+    sidebarLayout(
+      sidebarPanel(
+        radioButtons("data_cutoff", "Wollen Sie das Sample beschränken?",
+                     c("Alle Beobachtungen" = "none",
+                       "Nur Beobachtungen mit Preis > 6 €" = "be6eur")),
+        br(),
+        sliderInput("exclude_below_time",
+                    "Nur Beobachtungen mit Antwortzeit in Sekunden größer als...",
+                    value = 0,
+                    min = 0,
+                    max = 60),
+        downloadButton("download", "Download des Datensatzes")
+        
+      ),
+      mainPanel(
+        h3("Deskriptive Statistik"),
+        p("Unten sehen Sie Ihr Antwortverhalten, getrennt für die beiden",
+          "Experimentalgruppen. Der Preis in ist Euro und die Antwortzeit", 
+          "ist in Sekunden angegeben."),
+        tableOutput("descriptive_table"),
+        h3("Gruppenboxplot"),
+        plotOutput("box_plots"),
+        br(),
+        h3("Teststatistiken"),
+        tableOutput("tests"),
+        p(),
+        p("Der Chi-square Test basiert auf der folgenden Kontingenztabelle."),
+        tableOutput("cont_table"),
+        br(),
+        HTML("<p>Copyright Joachim Gassen, gassen@wiwi.hu-berlin.de, 2021.", 
+             "Siehe <a href='https://github.com/joachim-gassen/shiny_croom_exp'>",
+             "GitHub repository</a> für Lizenz, Code und Details.")
+      )
     )
   )
-)
+}
 
 
 server <- function(input, output, session) {
@@ -79,7 +85,7 @@ server <- function(input, output, session) {
   output$descriptive_table <- function() {
     df <- d() %>%  
       group_by(full_cost) %>%
-      select(price, time) %>%
+      select(full_cost, price, time) %>%
       gather(key = "var", value = "value", -full_cost) %>%
       group_by(full_cost, var) %>%
       summarise(N = n(),
@@ -89,7 +95,8 @@ server <- function(input, output, session) {
                 'Erstes Quartil' = quantile(value, 0.25),
                 Median = median(value),
                 'Drittes Quartil' = quantile(value, 0.75),
-                Maximum = max(value)) %>%
+                Maximum = max(value),
+                .groups = "drop") %>%
       rename(Vollkostendaten = full_cost)
     df <- as_tibble(cbind(nms = names(df), t(df)))
     print_df <- df[c(4:10),]

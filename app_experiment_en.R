@@ -51,7 +51,9 @@ ui <- fluidPage(
     tags$script(src = "js.cookies.js")
   ),
   useShinyjs(), 
-  extendShinyjs(text = jsCode),
+  extendShinyjs(
+    text = jsCode, functions = c("getcookie", "setcookie", "rmcookie")
+  ),
   titlePanel("A Pricing Task"),
   uiOutput("greeting"),
   br(),
