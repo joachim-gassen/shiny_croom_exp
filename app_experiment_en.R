@@ -1,5 +1,5 @@
 # --- Header -------------------------------------------------------------------
-# (C) Joachim Gassen 2019, gassen@wiwi.hu-berlin.de
+# (C) Joachim Gassen 2021, gassen@wiwi.hu-berlin.de
 # License: MIT. See LICENSE file for details.
 #
 # English language shiny app implementing a simple pricing experiment
@@ -16,6 +16,7 @@ library(shinyjs, quietly = TRUE)
 
 cost_info <- read.csv2("cost_info_en.csv")
 dbase_path <- "croom_exp.sqlite3"
+start_experiment <- lubridate::as_datetime("2021-04-26 09:00:00", tz = "CEST")
 DEBUG <- TRUE
 
 disableActionButton <- function(id, session) {
@@ -46,22 +47,25 @@ jsCode <- '
   }
 '
 
-ui <- fluidPage(
-  tags$head(
-    tags$script(src = "js.cookies.js")
-  ),
-  useShinyjs(), 
-  extendShinyjs(
-    text = jsCode, functions = c("getcookie", "setcookie", "rmcookie")
-  ),
-  titlePanel("A Pricing Task"),
-  uiOutput("greeting"),
-  br(),
-  uiOutput("cost_info"),
-  br(),
-  uiOutput("response")
-)
-
+if(Sys.time() < start_experiment & ! DEBUG) {
+  ui <- fluidPage(p("Nothing to see here yet. Sorry"))
+} else {
+  ui <- fluidPage(
+    tags$head(
+      tags$script(src = "js.cookies.js")
+    ),
+    useShinyjs(), 
+    extendShinyjs(
+      text = jsCode, functions = c("getcookie", "setcookie", "rmcookie")
+    ),
+    titlePanel("A Pricing Task"),
+    uiOutput("greeting"),
+    br(),
+    uiOutput("cost_info"),
+    br(),
+    uiOutput("response")
+  )
+}
 
 server <- function(input, output, session) {
   time_submitted <- NA
@@ -126,7 +130,7 @@ server <- function(input, output, session) {
     if(has_been_treated() && !has_participated()) {
       fluidRow(
         column(12, br(),
-               p("Welcome! This little classroom experiment presents a pricing",
+               p("This little classroom experiment presents a pricing",
                  "task. Below you will find information about the cost",
                  "structure of a new product. Your task is to decide on a",
                  "price based on the presented costs.",

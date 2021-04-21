@@ -1,5 +1,5 @@
 # --- Header -------------------------------------------------------------------
-# (C) Joachim Gassen 2019, gassen@wiwi.hu-berlin.de
+# (C) Joachim Gassen 2021, gassen@wiwi.hu-berlin.de
 # License: MIT. See LICENSE file for details.
 #
 # English language shiny app communicating the results of the pricing experiment
@@ -17,7 +17,7 @@ end_experiment <- lubridate::as_datetime("2021-04-27 10:00:00", tz = "CEST")
 DEBUG <- TRUE
 
 if(Sys.time() < end_experiment & ! DEBUG) {
-  ui <- fluidPage(p("Hier gibt es leider noch gar nichts zu sehen."))
+  ui <- fluidPage(p("Nothing to see here yet. Sorry."))
 } else {
   ui <- fluidPage(
     titlePanel("A Pricing Task: Experimental Findings"),

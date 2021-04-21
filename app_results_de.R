@@ -1,5 +1,5 @@
 # --- Header -------------------------------------------------------------------
-# (C) Joachim Gassen 2019, gassen@wiwi.hu-berlin.de
+# (C) Joachim Gassen 2021, gassen@wiwi.hu-berlin.de
 # License: MIT. See LICENSE file for details.
 #
 # German language shiny app communicating the results of the pricing experiment
