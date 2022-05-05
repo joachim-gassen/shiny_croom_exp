@@ -10,15 +10,15 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = "center", table.align = "center",
 
 ## Overview
 
-This is the repository for a simple classroom experiment that I used in the 
-first class of my introductory cost accounting course. It might be helpful to
-construct similar experiments and, of course, if someone is interested in 
-replicating the results from our run in her or his own class.
+This is the repository for a simple classroom experiment that I regularly use 
+in one of the first classes of my introductory cost accounting course. It might 
+be helpful to construct similar experiments and, of course, if someone is 
+interested in replicating the results from our runs in their own class.
 
-The experiment tests whether cost allocation (variable cost or full cost) 
-affects pricing decisions in a simple one product pricing setting. 
+The experiment tests whether providing marginal or full cost information
+affects pricing decisions in a simple one product pricing problem. 
 
-This is the experimental treatment with variable cost information. 
+This is the experimental treatment with marginal cost information. 
 
 ```{r, out.width = "90%", fig.align="center", fig.border = "none", echo=FALSE}
 knitr::include_graphics("pics/experiment_variable_cost.png")
@@ -31,36 +31,40 @@ knitr::include_graphics("pics/experiment_full_cost.png")
 ```
 
 In principle, both formats provide the same underlying information and thus, 
-pricing should not differ across the two treatments if subjects rationally 
-extract all available information. 
+pricing should not differ across the two treatments if our study participants
+rationally extract all available information. 
 
 Under the full cost treatment, however, fix costs are being allocated to units 
-based on expected unit sales. Assuming that subjects use simple "cost plus" 
+based on expected unit sales. Assuming that participants use simple "cost plus" 
 heuristics when setting their prices, this could imply that they are less 
 likely to set prices below \$12 when receiving the full cost treatment. Note 
 that setting prices below \$12 might very well be rational when demand reacts 
-strongly to price as the increased unit sales can compensate for the loss in 
+elastically to price as the increased unit sales can compensate for the loss in 
 margin.
 
-These are the results from our experimental run as presented by the real-time 
-shiny result app:
+These are the results from our inital experimental run in 2019 as presented by 
+the real-time shiny result app:
 
 ```{r, out.width = "90%", fig.align="center", fig.border = "none", echo=FALSE}
 knitr::include_graphics("pics/results_app.png")
 ```
 
-You can assess the [online version of our results here](https://trr266.wiwi.hu-berlin.de/shiny/kore_croom_eval). At least for 
-our students, it seems as if, in line with some prior literature, full cost 
-accounting causes them to set higher prices. In real life, this might imply 
-the risk of loosing market share, eventually pricing oneself out of the market.
+You can assess the [online version of our last experimental results here (in German)](https://trr266.wiwi.hu-berlin.de/shiny/kore_croom_result). All data form
+our four experimental runs that we did so far are included in 
+`data_completed_exp` folder. Some analysis code for the full sample is
+contained in the `add_code` folder. 
+
+At least for our students, it seems as if, in line with some prior literature, 
+full cost accounting causes them to set higher prices. In real life, this might 
+imply the risk of loosing market share, eventually pricing oneself out of the 
+market.
 
 
 ## Replicating the analysis and reusing the code
 
-The repository contains the data from our analysis as well as all the code that 
-you need to set up the experiment on your own shiny server. I have included the 
-English language version along with the original German language version that I 
-ran in class.
+The repository contains all the code that  you need to set up the experiment on 
+your own shiny server. I have included an English language version along with 
+the original German language version that I run in class.
 
 If you want to re-run the exact same experiment in your class for didactcial 
 purposes and/or to replicate our findings, you can also simply reach out and I

@@ -13,7 +13,7 @@ library(shinyjs, quietly = TRUE)
 library(tidyverse)
 library(kableExtra)
 
-dbase_path <- "croom_exp_response.sqlite3"
+dbase_path <- "data_completed_exp/kore_sose22_croom_exp_done.sqlite3"
 end_experiment <- lubridate::as_datetime("2021-04-27 10:00:00", tz = "CEST")
 DEBUG <- TRUE
 
