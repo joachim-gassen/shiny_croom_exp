@@ -16,8 +16,8 @@ library(shinyjs, quietly = TRUE)
 
 cost_info <- read.csv2("cost_info_de.csv")
 dbase_path <- "croom_exp.sqlite3"
-start_experiment <- lubridate::as_datetime("2021-04-26 09:00:00", tz = "CEST")
-DEBUG <- TRUE
+start_experiment <- lubridate::as_datetime("2023-05-04 08:30:00", tz = "CEST")
+DEBUG <- FALSE
 
 disableActionButton <- function(id, session) {
   session$sendCustomMessage(type="jsCode",

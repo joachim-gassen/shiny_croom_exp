@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# (C) Joachim Gassen 2022, gassen@wiwi.hu-berlin.de
+# (C) Joachim Gassen 2023, gassen@wiwi.hu-berlin.de
 # License: MIT. See LICENSE file for details.
 #
 # Some preliminary analyses over all four waves that this experiment has been 
@@ -71,6 +71,7 @@ univariate_analsis(exp_data %>% filter(wave == "kore_sose19"))
 univariate_analsis(exp_data %>% filter(wave == "kore_sose20"))
 univariate_analsis(exp_data %>% filter(wave == "kore_sose21"))
 univariate_analsis(exp_data %>% filter(wave == "kore_sose22"))
+univariate_analsis(exp_data %>% filter(wave == "kore_sose23"))
 
 feols(price ~ full_cost, data = exp_data)
 feols(price ~ full_cost | wave, data = exp_data)
